@@ -1,0 +1,59 @@
+services:
+  auth-ms:
+    container_name: auth-ms
+    build: ../auth-ms
+    ports:
+      - "3002:3002"
+    env_file:
+      - ../auth-ms/.env
+    depends_on:
+      - database
+    networks:
+      - app-network
+
+  transactions-ms:
+    container_name: transactions-ms
+    build: ../transactions-ms
+    ports:
+      - "3001:3001"
+    env_file:
+      - ../transactions-ms/.env
+    depends_on:
+      - database
+    networks:
+      - app-network
+
+  client-gateway:
+    container_name: client-gateway
+    build: ./
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./.env
+    depends_on:
+      - auth-ms
+      - transactions-ms
+    networks:
+      - app-network
+
+  database:
+    container_name: database
+    image: postgres:14
+    environment:
+      - POSTGRES_DB=tpaga
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgresql-volume:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgresql-volume:
+    external: true

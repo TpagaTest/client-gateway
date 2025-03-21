@@ -13,7 +13,7 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   )
-  await app.listen(envs.port ?? 3000);
+  await app.listen(envs.port ?? 3000, '0.0.0.0');
   logger.log(`Gateway running on port ${envs.port}`);
 }
 bootstrap();
